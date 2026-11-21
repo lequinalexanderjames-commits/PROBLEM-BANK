@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Problem Bank Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- setup notice -->
+  <section id="setup" class="login card" hidden>
+    <h2>Connect Supabase first</h2>
+    <p class="hint" style="margin-top:8px">Open <code>js/config.js</code> and paste your project URL and anon key. Then reload this page.</p>
+  </section>
+
+  <!-- sign in -->
+  <section id="login" class="login card" hidden>
+    <div class="brand"><h2 style="font-size:24px">Problem Bank</h2><span class="tag">Admin</span></div>
+    <form id="login-form" class="sect" style="border:0;padding-bottom:0" autocomplete="on">
+      <div class="field"><label for="l-email">Email</label><input type="email" id="l-email" autocomplete="username" required></div>
+      <div class="field"><label for="l-pass">Password</label><input type="password" id="l-pass" autocomplete="current-password" required></div>
+      <p class="error" id="login-error" role="alert" hidden></p>
+      <div><button class="btn" type="submit" id="login-btn">Sign in</button></div>
+    </form>
+  </section>
+
+  <!-- app -->
+  <div id="app" hidden>
+    <header class="top">
+      <div class="topbar">
+        <div class="brand"><h1>Problem Bank</h1><span class="tag">Future Development Plan</span></div>
+        <button class="btn ghost sm" type="button" id="signout">Sign out</button>
+      </div>
+      <p class="sub">Problems sent in by people, grouped automatically, ranked for you.</p>
+      <nav class="tabs" aria-label="Sections">
+        <a href="#clusters" data-view="clusters">Groups <span class="count" id="n-groups">0</span></a>
+        <a href="#inbox" data-view="inbox">All responses</a>
+        <a href="#moderation" data-view="moderation">Moderation <span class="count" id="n-flagged">0</span></a>
+        <a href="#plan" data-view="plan">Plan</a>
+        <a href="#settings" data-view="settings">Settings</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="stats" id="stats"></div>
+
+      <!-- GROUPS -->
+      <section id="view-clusters" hidden style="display:grid;gap:16px">
+        <div class="card">
+          <div class="filters">
+            <div class="field"><label for="c-status">Status</label>
+              <select id="c-status"><option value="">All</option><option value="idea">Idea</option><option value="validating">Validating</option><option value="prototyping">Prototyping</option><option value="parked">Parked</option></select></div>
+            <div class="field"><label for="c-search">Search group names</label><input type="text" id="c-search" placeholder="bus, bill, medicine"></div>
+          </div>
+          <p class="hint" style="margin-top:10px">Similar problems are grouped as they arrive. Rename a group, set how well your skills fit, and the priority score updates.</p>
+        </div>
+        <div class="list" id="cluster-list"></div>
+      </section>
+
+      <!-- ALL RESPONSES -->
+      <section id="view-inbox" hidden style="display:grid;gap:16px">
+        <div class="card">
+          <div class="filters">
+            <div class="field"><label for="i-search">Search responses</label><input type="text" id="i-search" placeholder="Search titles and descriptions"></div>
+            <div class="field"><label for="i-cat">Area</label>
+              <select id="i-cat"><option value="">All areas</option>
+                <option>Money and bills</option><option>School and learning</option><option>Work and business</option><option>Health</option>
+                <option>Getting around</option><option>Government and paperwork</option><option>Home and family</option><option>Shopping</option>
+                <option>Online and phones</option><option>Community</option><option>Other</option></select></div>
+          </div>
+        </div>
+        <div class="list" id="inbox-list"></div>
+      </section>
+
+      <!-- MODERATION -->
+      <section id="view-moderation" hidden style="display:grid;gap:16px">
+        <div class="card">
+          <div class="subtabs">
+            <button type="button" data-mod="flagged" aria-pressed="true">Flagged <span class="count" id="m-flagged">0</span></button>
+            <button type="button" data-mod="rejected" aria-pressed="false">Rejected <span class="count" id="m-rejected">0</span></button>
+          </div>
+          <p class="hint" style="margin-top:10px">Flagged messages are borderline, such as swearing about a real problem, and wait for your decision. Rejected messages looked like abuse or spam and are kept out of your results. Approving one adds it to the right group.</p>
+        </div>
+        <div class="list" id="mod-list"></div>
+      </section>
+
+      <!-- PLAN -->
+      <section id="view-plan" hidden style="display:grid;gap:20px">
+        <div class="card">
+          <div class="eyebrow">Your skills</div>
+          <h2>What you can build with</h2>
+          <p class="hint">Tap to switch skills on or off. Groups that need skills you lack show up as gaps below.</p>
+          <div class="chips" id="profile-chips"></div>
+          <form class="addrow" id="skill-form" autocomplete="off">
+            <input type="text" id="skill-new" placeholder="Add another skill, for example Flutter" aria-label="Add another skill">
+            <button class="btn ghost sm" type="submit">Add skill</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Build next</div>
+          <h2>Top picks</h2>
+          <p class="hint">Highest priority groups that are not parked.</p>
+          <div id="picks" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Roadmap for pick #1</div>
+          <h2 id="road-title">Roadmap</h2>
+          <div class="scroll" style="margin-top:10px">
+            <table class="table">
+              <thead><tr><th>When</th><th>Phase</th><th>What you do</th></tr></thead>
+              <tbody id="road-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Skill demand</div>
+          <h2>What the problems ask of you</h2>
+          <p class="hint">Counts how many people each skill would help. Amber means it is not in your profile yet.</p>
+          <div class="bars" id="skill-bars"></div>
+          <div class="legend"><span>In your profile</span><span class="g">Gap to learn</span></div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Keep a copy</div>
+          <h2>Export</h2>
+          <div class="btnrow" style="margin-top:12px"><button class="btn" type="button" id="export-copy">Copy as Markdown</button></div>
+          <textarea class="export" id="export-text" readonly aria-label="Plan as Markdown"></textarea>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="view-settings" hidden style="display:grid;gap:20px">
+        <div class="card">
+          <div class="eyebrow">Troll filter and grouping</div>
+          <h2>Thresholds</h2>
+          <p class="hint">Every message gets a risk score from 0 to 100. At or above the flag line it waits for review. At or above the reject line it is hidden automatically.</p>
+          <div class="settings-grid">
+            <div class="field"><label for="s-flag">Flag at</label><input type="number" id="s-flag" min="1" max="99"></div>
+            <div class="field"><label for="s-reject">Reject at</label><input type="number" id="s-reject" min="2" max="100"></div>
+            <div class="field"><label for="s-rate">Max submissions per hour, per sender</label><input type="number" id="s-rate" min="1" max="100"></div>
+            <div class="field"><label for="s-sim">Similarity needed to group (0.05 to 0.95)</label><input type="number" id="s-sim" min="0.05" max="0.95" step="0.01"></div>
+          </div>
+          <div class="btnrow" style="margin-top:16px"><button class="btn" type="button" id="cfg-save">Save thresholds</button></div>
+          <p class="hint" style="margin-top:12px">Lower the similarity number to merge more problems together. Raise it to keep groups tighter. It applies to new responses. Use rebuild below to apply it to old ones.</p>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Troll filter</div>
+          <h2>Blocked words and phrases</h2>
+          <p class="hint">Weight is the number of risk points a match adds. Matching ignores capital letters, common letter swaps like @ for a, and stretched letters like fuuuck.</p>
+          <form class="addrow" id="term-form" autocomplete="off">
+            <input type="text" id="t-term" placeholder="Word or phrase" aria-label="Word or phrase">
+            <input type="number" id="t-weight" value="35" min="1" max="100" style="max-width:100px" aria-label="Weight">
+            <select id="t-kind" style="max-width:130px" aria-label="Kind"><option>abuse</option><option>threat</option><option>spam</option></select>
+            <button class="btn ghost sm" type="submit">Add</button>
+          </form>
+          <div class="scroll" style="margin-top:14px">
+            <table class="table"><thead><tr><th>Term</th><th>Kind</th><th>Weight</th><th></th></tr></thead><tbody id="term-body"></tbody></table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Troll filter</div>
+          <h2>Banned senders</h2>
+          <p class="hint">Ban a sender from a flagged or rejected message. Their future messages are rejected automatically. Senders are anonymous codes, not addresses.</p>
+          <div class="scroll" style="margin-top:10px">
+            <table class="table"><thead><tr><th>Sender code</th><th>Banned</th><th></th></tr></thead><tbody id="ban-body"></tbody></table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Maintenance</div>
+          <h2>Rebuild all groups</h2>
+          <p class="hint">Regroups every approved response from scratch with the current similarity setting. This erases group names, notes, status, fit, and skills. Use it only early on.</p>
+          <div class="btnrow" style="margin-top:12px"><button class="btn ghost" type="button" id="recluster" data-confirm="1">Rebuild groups</button></div>
+        </div>
+      </section>
+    </main>
+    <p class="foot-note">Only accounts listed in the admins table can read this data. Public visitors can submit a problem and nothing else.</p>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

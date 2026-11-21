@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problem Bank</title>
+<meta name="description" content="Tell a student researcher about an everyday problem. No tech knowledge needed.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap narrow">
+  <header class="top">
+    <div class="brand">
+      <h1>Problem Bank</h1>
+      <span class="tag">Future Development Plan</span>
+    </div>
+    <p class="sub">What keeps going wrong in your day? Tell us about something that wastes your time, money, or patience. You do not need to know anything about technology. We are students collecting everyday problems to find the ones that software could help with.</p>
+  </header>
+
+  <div id="config-warning" class="notice" hidden>
+    <b>Supabase is not connected yet.</b>
+    <p class="hint">Open <code>js/config.js</code> and paste your project URL and anon key. The README explains where to find them.</p>
+  </div>
+
+  <main>
+    <form id="submit-form" class="card" novalidate autocomplete="off">
+      <fieldset class="sect">
+        <legend>The problem</legend>
+        <div class="field">
+          <label for="f-title">What is the problem?</label>
+          <input type="text" id="f-title" maxlength="140" placeholder="My bus is always late and I never know when it will come">
+          <p class="hint">One sentence is enough.</p>
+        </div>
+        <div class="field">
+          <label for="f-desc">Tell us what happens</label>
+          <textarea id="f-desc" maxlength="2000" placeholder="When does it happen? What does it cost you in time, money, or stress?"></textarea>
+          <div class="counter"><span id="desc-count">0</span> / 2000</div>
+        </div>
+        <div class="field">
+          <label for="f-cat">Which part of life is this?</label>
+          <select id="f-cat">
+            <option value="" selected disabled>Choose one</option>
+            <option>Money and bills</option>
+            <option>School and learning</option>
+            <option>Work and business</option>
+            <option>Health</option>
+            <option>Getting around</option>
+            <option>Government and paperwork</option>
+            <option>Home and family</option>
+            <option>Shopping</option>
+            <option>Online and phones</option>
+            <option>Community</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="sect">
+        <legend>How big is it?</legend>
+        <div class="field">
+          <span class="lab" id="pain-label">How much does it bother you?</span>
+          <div class="choices scale" role="radiogroup" aria-labelledby="pain-label">
+            <label class="choice"><input type="radio" name="pain" value="1"><span>1</span></label>
+            <label class="choice"><input type="radio" name="pain" value="2"><span>2</span></label>
+            <label class="choice"><input type="radio" name="pain" value="3"><span>3</span></label>
+            <label class="choice"><input type="radio" name="pain" value="4"><span>4</span></label>
+            <label class="choice"><input type="radio" name="pain" value="5"><span>5</span></label>
+          </div>
+          <div class="scale-ends"><span>A little</span><span>A lot</span></div>
+        </div>
+        <div class="field">
+          <span class="lab" id="freq-label">How often does it happen?</span>
+          <div class="choices" role="radiogroup" aria-labelledby="freq-label">
+            <label class="choice"><input type="radio" name="frequency" value="rarely"><span>Rarely</span></label>
+            <label class="choice"><input type="radio" name="frequency" value="monthly"><span>About monthly</span></label>
+            <label class="choice"><input type="radio" name="frequency" value="weekly"><span>About weekly</span></label>
+            <label class="choice"><input type="radio" name="frequency" value="daily"><span>Almost daily</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-workaround">What do you do about it today? <span class="hint">(optional)</span></label>
+          <textarea id="f-workaround" maxlength="1000" placeholder="For example: I ask friends, I keep a paper list, I just put up with it."></textarea>
+        </div>
+        <div class="field">
+          <span class="lab" id="use-label">If a simple app or website could fix this, would you use it?</span>
+          <div class="choices" role="radiogroup" aria-labelledby="use-label">
+            <label class="choice"><input type="radio" name="would_use" value="yes"><span>Yes</span></label>
+            <label class="choice"><input type="radio" name="would_use" value="maybe" checked><span>Maybe</span></label>
+            <label class="choice"><input type="radio" name="would_use" value="no"><span>No</span></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="sect">
+        <legend>About you <span class="hint" style="font-family:var(--font-body);font-weight:400">(all optional)</span></legend>
+        <div class="row2">
+          <div class="field">
+            <label for="f-age">Age range</label>
+            <select id="f-age">
+              <option value="">Prefer not to say</option>
+              <option>18-24</option><option>25-34</option><option>35-49</option><option>50-64</option><option>65+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-loc">Town or region</label>
+            <input type="text" id="f-loc" maxlength="80" placeholder="City or region only">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input type="email" id="f-email" maxlength="120" placeholder="you@example.com">
+          <p class="hint">Only fill this in if you are happy for a student researcher to ask a few follow-up questions. It is never shown publicly.</p>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Leave this field empty</label>
+          <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+      </fieldset>
+
+      <fieldset class="sect">
+        <label class="check" for="f-consent">
+          <input type="checkbox" id="f-consent">
+          <span>I am 18 or older. I agree that my answers may be used in student research. I have not included my full name, phone number, or other private details.</span>
+        </label>
+        <p class="error" id="form-error" role="alert" hidden></p>
+        <div class="btnrow"><button class="btn" type="submit" id="send-btn">Send my problem</button></div>
+      </fieldset>
+    </form>
+
+    <section id="thanks" class="card" hidden>
+      <div class="eyebrow">Received</div>
+      <h2>Thank you. Your problem is in the bank.</h2>
+      <p class="hint" style="margin-top:8px">Real problems from real people are what make this research useful. If you left an email, we may contact you with a few questions.</p>
+      <div class="btnrow" style="margin-top:16px"><button class="btn ghost" type="button" id="another-btn">Add another problem</button></div>
+    </section>
+  </main>
+
+  <p class="foot-note">Privacy: we store your answers and, if you give them, your age range, region, and email. To block spam we also keep a scrambled code made from your connection, which cannot be turned back into an address. Messages that are abusive or look like spam are held back and never used in the research.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/moderation.js"></script>
+<script src="js/form.js"></script>
+</body>
+</html>
